@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SkillCheck — Кабинет аналитика</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #0b0d12;
+    color: white;
+    padding: 40px 7%;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #9da3b0;
+    margin-bottom: 30px;
+}
+
+.box {
+    max-width: 500px;
+    background: #151820;
+    border: 1px solid #303541;
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0 14px;
+    background: #0d1016;
+    border: 1px solid #303541;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    padding: 13px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #ff4655;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+button:hover {
+    background: #e63645;
+}
+
+.logout {
+    background: #303541;
+    margin-bottom: 25px;
+}
+
+.order {
+    max-width: 800px;
+    background: #151820;
+    border: 1px solid #303541;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.order p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.order b {
+    color: #ff4655;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.new {
+    color: #ffc107;
+}
+
+.progress {
+    color: #42a5f5;
+}
+
+.completed {
+    color: #4caf50;
+}
+
+.empty {
+    color: #9da3b0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div id="loginBox" class="box">
+
+    <h1>
+        SkillCheck
+    </h1>
+
+    <p class="subtitle">
+        Вход для аналитика
+    </p>
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Email"
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Пароль"
+    >
+
+    <button onclick="login()">
+        Войти
+    </button>
+
+</div>
+
+
+<div id="dashboard" style="display:none;">
+
+    <h1>
+        Кабинет аналитика
+    </h1>
+
+    <p
+        id="analystName"
+        class="subtitle"
+    >
+    </p>
+
+    <button
+        class="logout"
+        onclick="logout()"
+    >
+        Выйти
+    </button>
+
+    <h2>
+        Мои заявки
+    </h2>
+
+    <div id="orders">
+        Загрузка заявок...
+    </div>
+
+</div>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"https://xzwzulhnwzcfsgcdibtv.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_0Z5dWG3a_dXX-dd5b2cZEg_z1C6IvFS";
+
+
+let currentAnalyst = null;
+
+
+async function login() {
+
+
+    const email =
+    document
+        .getElementById("email")
+        .value;
+
+
+    const password =
+    document
+        .getElementById("password")
+        .value;
+
+
+    if (!email || !password) {
+
+        alert(
+            "Введи email и пароль"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/analysts?email=eq." +
+            encodeURIComponent(email) +
+            "&password=eq." +
+            encodeURIComponent(password) +
+            "&select=*",
+
+            {
+
+                headers: {
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        const analysts =
+        await response.json();
+
+
+        if (analysts.length === 0) {
+
+            alert(
+                "Неверный email или пароль"
+            );
+
+            return;
+
+        }
+
+
+        currentAnalyst =
+        analysts[0];
+
+
+        document
+            .getElementById("loginBox")
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById("dashboard")
+            .style.display =
+            "block";
+
+
+        document
+            .getElementById("analystName")
+            .innerText =
+            "Вы вошли как: " +
+            currentAnalyst.username;
+
+
+        loadOrders();
+
+
+    } catch (error) {
+
+
+        alert(
+            "Ошибка:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+async function loadOrders() {
+
+
+    const ordersBox =
+    document
+        .getElementById("orders");
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?analyst=eq." +
+            encodeURIComponent(
+                currentAnalyst.username
+            ) +
+            "&select=*&order=created_at.desc",
+
+            {
+
+                headers: {
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        const orders =
+        await response.json();
+
+
+        if (orders.length === 0) {
+
+            ordersBox.innerHTML =
+            '<p class="empty">Пока заявок нет.</p>';
+
+            return;
+
+        }
+
+
+        ordersBox.innerHTML =
+        "";
+
+
+        orders.forEach(
+            order => {
+
+
+                let statusText =
+                "Новая";
+
+
+                let statusClass =
+                "new";
+
+
+                if (
+                    order.status ===
+                    "in_progress"
+                ) {
+
+                    statusText =
+                    "В работе";
+
+                    statusClass =
+                    "progress";
+
+                }
+
+
+                if (
+                    order.status ===
+                    "completed"
+                ) {
+
+                    statusText =
+                    "Готово";
+
+                    statusClass =
+                    "completed";
+
+                }
+
+
+                const div =
+                document
+                    .createElement("div");
+
+
+                div.className =
+                "order";
+
+
+                div.innerHTML = `
+
+                    <p>
+                        <b>Match ID:</b>
+                        ${order.match_id}
+                    </p>
+
+                    <p>
+                        <b>MMR игрока:</b>
+                        ${order.player_mmr}
+                    </p>
+
+                    <p>
+                        <b>Вопрос:</b>
+                        ${order.question}
+                    </p>
+
+                    <p>
+                        <b>Статус:</b>
+
+                        <span
+                            class="status ${statusClass}"
+                        >
+                            ${statusText}
+                        </span>
+
+                    </p>
+
+                    <br>
+
+                    <button
+                        onclick="
+                        updateStatus(
+                            ${order.id},
+                            'in_progress'
+                        )"
+                    >
+                        Взять в работу
+                    </button>
+
+                    <button
+                        onclick="
+                        updateStatus(
+                            ${order.id},
+                            'completed'
+                        )"
+                    >
+                        Завершить
+                    </button>
+
+                `;
+
+
+                ordersBox.appendChild(
+                    div
+                );
+
+            }
+
+        );
+
+
+    } catch (error) {
+
+
+        ordersBox.innerHTML =
+        "<p>Ошибка: " +
+        error.message +
+        "</p>";
+
+    }
+
+}
+
+
+async function updateStatus(
+    orderId,
+    status
+) {
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?id=eq." +
+            orderId,
+
+            {
+
+                method: "PATCH",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json",
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                },
+
+                body:
+                JSON.stringify({
+
+                    status:
+                    status
+
+                })
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        alert(
+            "Статус обновлён!"
+        );
+
+
+        loadOrders();
+
+
+    } catch (error) {
+
+
+        alert(
+            "Ошибка:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+function logout() {
+
+    location.reload();
+
+}
+
+
+</script>
+
+</body>
+
+</html>
