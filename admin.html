@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReplayLab — Admin Panel</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #0b0d12;
+    color: white;
+    padding: 40px 7%;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.login-box {
+    max-width: 400px;
+    margin-bottom: 30px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: #151820;
+    border: 1px solid #303541;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 7px;
+    color: white;
+    cursor: pointer;
+    margin: 4px;
+}
+
+.login-button {
+    background: #ff4655;
+    font-size: 16px;
+    padding: 14px 22px;
+}
+
+.status-new {
+    color: #ffc107;
+}
+
+.status-progress {
+    color: #42a5f5;
+}
+
+.status-completed {
+    color: #4caf50;
+}
+
+.status-cancelled {
+    color: #ff4655;
+}
+
+.order {
+    background: #151820;
+    border: 1px solid #303541;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 18px;
+    max-width: 900px;
+}
+
+.order p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.order b {
+    color: #ff4655;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status-buttons {
+    margin-top: 18px;
+    border-top: 1px solid #303541;
+    padding-top: 14px;
+}
+
+.work {
+    background: #1976d2;
+}
+
+.complete {
+    background: #388e3c;
+}
+
+.cancel {
+    background: #d32f2f;
+}
+
+.refresh {
+    background: #303541;
+    margin-bottom: 20px;
+}
+
+.empty {
+    color: #9da3b0;
+}
+</style>
+</head>
+
+<body>
+
+<h1>ReplayLab — Admin Panel</h1>
+
+<div class="login-box">
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Введите пароль"
+    >
+
+    <button class="login-button" onclick="login()">
+        Войти
+    </button>
+
+</div>
+
+<button class="refresh" onclick="loadOrders()">
+    🔄 Обновить заявки
+</button>
+
+<div id="orders"></div>
+
+<script>
+
+const SUPABASE_URL =
+"https://xzwzulhnwzcfsgcdibtv.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_0Z5dWG3a_dXX-dd5b2cZEg_z1C6IvFS";
+
+let isLoggedIn = false;
+
+function login() {
+
+    const password =
+    document.getElementById("password").value;
+
+    if (password === "1234") {
+
+        isLoggedIn = true;
+
+        loadOrders();
+
+    } else {
+
+        alert("Неверный пароль");
+
+    }
+
+}
+
+async function loadOrders() {
+
+    if (!isLoggedIn) {
+
+        alert("Сначала введи пароль");
+
+        return;
+
+    }
+
+    const ordersContainer =
+    document.getElementById("orders");
+
+    ordersContainer.innerHTML =
+    "<p>Загрузка заявок...</p>";
+
+    try {
+
+        const response = await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?select=*&order=created_at.desc",
+
+            {
+
+                method: "GET",
+
+                headers: {
+
+                    "apikey": SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " + SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+        const orders =
+        await response.json();
+
+        if (orders.length === 0) {
+
+            ordersContainer.innerHTML =
+            '<p class="empty">Заявок пока нет.</p>';
+
+            return;
+
+        }
+
+        ordersContainer.innerHTML = "";
+
+        orders.forEach(order => {
+
+            let statusText = "";
+            let statusClass = "";
+
+            if (order.status === "new") {
+
+                statusText = "🟡 Новая";
+                statusClass = "status-new";
+
+            } else if (
+                order.status === "in_progress"
+            ) {
+
+                statusText = "🔵 В работе";
+                statusClass = "status-progress";
+
+            } else if (
+                order.status === "completed"
+            ) {
+
+                statusText = "🟢 Готово";
+                statusClass = "status-completed";
+
+            } else if (
+                order.status === "cancelled"
+            ) {
+
+                statusText = "🔴 Отменено";
+                statusClass = "status-cancelled";
+
+            }
+
+            const orderElement =
+            document.createElement("div");
+
+            orderElement.className = "order";
+
+            orderElement.innerHTML = `
+
+                <p>
+                    <b>Аналитик:</b>
+                    ${order.analyst}
+                </p>
+
+                <p>
+                    <b>Match ID:</b>
+                    ${order.match_id}
+                </p>
+
+                <p>
+                    <b>MMR игрока:</b>
+                    ${order.player_mmr}
+                </p>
+
+                <p>
+                    <b>Вопрос:</b>
+                    ${order.question}
+                </p>
+
+                <p>
+                    <b>Статус:</b>
+
+                    <span class="status ${statusClass}">
+                        ${statusText}
+                    </span>
+
+                </p>
+
+                <div class="status-buttons">
+
+                    <button
+                        class="work"
+                        onclick="updateStatus(${order.id}, 'in_progress')"
+                    >
+                        🔵 В работу
+                    </button>
+
+                    <button
+                        class="complete"
+                        onclick="updateStatus(${order.id}, 'completed')"
+                    >
+                        🟢 Готово
+                    </button>
+
+                    <button
+                        class="cancel"
+                        onclick="updateStatus(${order.id}, 'cancelled')"
+                    >
+                        🔴 Отменить
+                    </button>
+
+                </div>
+
+            `;
+
+            ordersContainer.appendChild(
+                orderElement
+            );
+
+        });
+
+    } catch (error) {
+
+        ordersContainer.innerHTML =
+        "<p>Ошибка: " +
+        error.message +
+        "</p>";
+
+    }
+
+}
+
+async function updateStatus(
+    orderId,
+    newStatus
+) {
+
+    try {
+
+        const response = await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?id=eq." +
+            orderId,
+
+            {
+
+                method: "PATCH",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json",
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY,
+
+                    "Prefer":
+                    "return=minimal"
+
+                },
+
+                body: JSON.stringify({
+
+                    status: newStatus
+
+                })
+
+            }
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+        alert("Статус изменён!");
+
+        loadOrders();
+
+    } catch (error) {
+
+        alert(
+            "Ошибка: " +
+            error.message
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

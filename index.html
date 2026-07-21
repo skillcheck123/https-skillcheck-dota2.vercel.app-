@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SkillCheck — Разборы Dota 2</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0b0d12;
+    color: white;
+}
+
+header {
+    height: 72px;
+    border-bottom: 1px solid #242832;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #ff4655;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    color: #9da3b0;
+    text-decoration: none;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.login-btn {
+    padding: 11px 20px;
+    border: 1px solid #343944;
+    border-radius: 8px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    border-color: #ff4655;
+}
+
+.hero {
+    padding: 100px 7% 80px;
+    background:
+        radial-gradient(circle at 70% 20%, #28161b 0%, transparent 35%),
+        #0b0d12;
+}
+
+.hero h1 {
+    font-size: 58px;
+    max-width: 700px;
+    line-height: 1.05;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: #ff4655;
+}
+
+.hero p {
+    color: #9da3b0;
+    font-size: 19px;
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+}
+
+.main-btn {
+    background: #ff4655;
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.main-btn:hover {
+    background: #e63645;
+}
+
+.stats {
+    display: flex;
+    gap: 60px;
+    margin-top: 65px;
+}
+
+.stat h2 {
+    font-size: 30px;
+}
+
+.stat p {
+    color: #777e8d;
+    margin-top: 5px;
+}
+
+.section {
+    padding: 70px 7%;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.section-title h2 {
+    font-size: 32px;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+}
+
+select {
+    background: #151820;
+    color: white;
+    border: 1px solid #2c313c;
+    padding: 12px 15px;
+    border-radius: 7px;
+}
+
+.analysts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: #12151c;
+    border: 1px solid #242832;
+    border-radius: 14px;
+    padding: 24px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #ff4655;
+}
+
+.avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #272d3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.card h3 {
+    font-size: 21px;
+}
+
+.role {
+    color: #ff4655;
+    margin-top: 5px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    color: #9da3b0;
+    margin: 12px 0;
+}
+
+.price {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.order-btn {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 7px;
+    background: #242832;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.order-btn:hover {
+    background: #ff4655;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.step {
+    background: #12151c;
+    border: 1px solid #242832;
+    padding: 28px;
+    border-radius: 14px;
+}
+
+.step-number {
+    color: #ff4655;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.step h3 {
+    margin-bottom: 10px;
+}
+
+.step p {
+    color: #9299a7;
+    line-height: 1.5;
+}
+
+footer {
+    border-top: 1px solid #242832;
+    padding: 35px 7%;
+    color: #777e8d;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal-content {
+    background: #151820;
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 14px;
+    border: 1px solid #303541;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+}
+
+input,
+textarea {
+    width: 100%;
+    margin: 8px 0 14px;
+    padding: 14px;
+    background: #0d1016;
+    border: 1px solid #303541;
+    border-radius: 7px;
+    color: white;
+    font-size: 15px;
+}
+
+textarea {
+    height: 110px;
+    resize: none;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    color: #9da3b0;
+}
+
+.error {
+    color: #ff4655;
+    margin-top: 12px;
+}
+
+.dashboard {
+    display: none;
+    min-height: 100vh;
+    padding: 60px 7%;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.dashboard-subtitle {
+    color: #9da3b0;
+    margin-top: 8px;
+}
+
+.logout-btn {
+    padding: 12px 20px;
+    background: #242832;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #ff4655;
+}
+
+.orders {
+    display: grid;
+    gap: 18px;
+}
+
+.order {
+    background: #12151c;
+    border: 1px solid #242832;
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.order p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.order b {
+    color: #ff4655;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status-new {
+    color: #ffc107;
+}
+
+.status-progress {
+    color: #42a5f5;
+}
+
+.status-completed {
+    color: #4caf50;
+}
+
+.order-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.order-action {
+    padding: 11px 16px;
+    border: none;
+    border-radius: 7px;
+    background: #242832;
+    color: white;
+    cursor: pointer;
+}
+
+.order-action:hover {
+    background: #ff4655;
+}
+
+.empty {
+    color: #9da3b0;
+}
+
+@media(max-width: 800px) {
+
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .analysts,
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    nav {
+        display: none;
+    }
+
+    .stats {
+        gap: 25px;
+    }
+
+    .header-buttons {
+        flex-direction: column;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+        gap: 20px;
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="mainSite">
+
+
+<header>
+
+    <div class="logo">
+        Skill<span>Check</span>
+    </div>
+
+
+    <nav>
+
+        <a href="#analysts">
+            Аналитики
+        </a>
+
+        <a href="#how">
+            Как это работает
+        </a>
+
+    </nav>
+
+
+    <div class="header-buttons">
+
+        <button
+            class="login-btn"
+            onclick="openLoginModal()"
+        >
+            Войти
+        </button>
+
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='register.html'"
+        >
+            Стать аналитиком
+        </button>
+
+    </div>
+
+</header>
+
+
+<section class="hero">
+
+    <h1>
+
+        Разбери свою игру.
+        Найди ошибки.
+        <span>Подними MMR.</span>
+
+    </h1>
+
+
+    <p>
+
+        Отправь Match ID своей игры и получи персональный разбор
+        от опытного игрока высокого MMR.
+
+    </p>
+
+
+    <button
+        class="main-btn"
+        onclick="scrollToAnalysts()"
+    >
+
+        Найти аналитика
+
+    </button>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <h2 id="analystCount">
+                0
+            </h2>
+
+            <p>
+                Аналитиков
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h2>
+                1 000+
+            </h2>
+
+            <p>
+                Разобранных игр
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h2>
+                8k+
+            </h2>
+
+            <p>
+                Средний MMR аналитиков
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section"
+    id="analysts"
+>
+
+    <div class="section-title">
+
+        <h2>
+            Выбери аналитика
+        </h2>
+
+
+        <div class="filters">
+
+            <select
+                id="roleFilter"
+                onchange="filterAnalysts()"
+            >
+
+                <option value="all">
+                    Все роли
+                </option>
+
+                <option value="Carry">
+                    Carry
+                </option>
+
+                <option value="Mid">
+                    Mid
+                </option>
+
+                <option value="Offlane">
+                    Offlane
+                </option>
+
+                <option value="Support">
+                    Support
+                </option>
+
+            </select>
+
+
+            <select
+                id="mmrFilter"
+                onchange="filterAnalysts()"
+            >
+
+                <option value="all">
+                    Любой MMR
+                </option>
+
+                <option value="9000">
+                    9000+
+                </option>
+
+                <option value="11000">
+                    11000+
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="analysts"
+        id="analystsContainer"
+    >
+
+        <p>
+            Загрузка аналитиков...
+        </p>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section"
+    id="how"
+>
+
+    <div class="section-title">
+
+        <h2>
+            Как это работает
+        </h2>
+
+    </div>
+
+
+    <div class="steps">
+
+
+        <div class="step">
+
+            <div class="step-number">
+                01
+            </div>
+
+            <h3>
+                Выбираешь аналитика
+            </h3>
+
+            <p>
+                Смотришь его MMR,
+                роль и цену разбора.
+            </p>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                02
+            </div>
+
+            <h3>
+                Отправляешь игру
+            </h3>
+
+            <p>
+                Указываешь Match ID
+                и задаёшь свой вопрос.
+            </p>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                03
+            </div>
+
+            <h3>
+                Получаешь разбор
+            </h3>
+
+            <p>
+                Аналитик разбирает твою игру
+                и объясняет ошибки.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    © 2026 SkillCheck —
+    платформа для разбора Dota 2 матчей
+
+</footer>
+
+</div>
+
+
+<div
+    class="dashboard"
+    id="dashboard"
+>
+
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>
+                Кабинет аналитика
+            </h1>
+
+
+            <p
+                class="dashboard-subtitle"
+                id="analystName"
+            >
+
+            </p>
+
+        </div>
+
+
+        <button
+            class="logout-btn"
+            onclick="logout()"
+        >
+
+            Выйти из кабинета
+
+        </button>
+
+    </div>
+
+
+    <h2>
+        Мои заявки
+    </h2>
+
+
+    <br>
+
+
+    <div
+        class="orders"
+        id="orders"
+    >
+
+        <p>
+            Загрузка заявок...
+        </p>
+
+    </div>
+
+</div>
+
+
+<div
+    class="modal"
+    id="orderModal"
+>
+
+
+    <div class="modal-content">
+
+
+        <span
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </span>
+
+
+        <h2>
+            Заказать разбор
+        </h2>
+
+
+        <p
+            id="selectedAnalyst"
+            style="color:#ff4655; margin-bottom:15px;"
+        >
+
+        </p>
+
+
+        <input
+            type="text"
+            id="matchId"
+            placeholder="Match ID"
+        >
+
+
+        <input
+            type="text"
+            id="playerMmr"
+            placeholder="Твой MMR"
+        >
+
+
+        <textarea
+            id="question"
+            placeholder="Что хочешь узнать в этой игре?"
+        ></textarea>
+
+
+        <button
+            class="main-btn"
+            onclick="sendOrder()"
+        >
+
+            Отправить заявку
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<div
+    class="modal"
+    id="loginModal"
+>
+
+
+    <div class="modal-content">
+
+
+        <span
+            class="close"
+            onclick="closeLoginModal()"
+        >
+            ×
+        </span>
+
+
+        <h2>
+            Вход аналитика
+        </h2>
+
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Email"
+        >
+
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Пароль"
+        >
+
+
+        <button
+            class="main-btn"
+            onclick="loginAnalyst()"
+        >
+
+            Войти
+
+        </button>
+
+
+        <p
+            id="loginError"
+            class="error"
+        >
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"https://xzwzulhnwzcfsgcdibtv.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_0Z5dWG3a_dXX-dd5b2cZEg_z1C6IvFS";
+
+
+let selectedAnalyst =
+"";
+
+
+let allAnalysts =
+[];
+
+
+let currentAnalyst =
+null;
+
+
+function scrollToAnalysts() {
+
+
+    document
+        .getElementById("analysts")
+        .scrollIntoView({
+
+            behavior: "smooth"
+
+        });
+
+}
+
+
+async function loadAnalysts() {
+
+
+    const container =
+    document
+        .getElementById(
+            "analystsContainer"
+        );
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/analysts?select=*&order=created_at.desc",
+
+            {
+
+                headers: {
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        allAnalysts =
+        await response.json();
+
+
+        document
+            .getElementById(
+                "analystCount"
+            )
+            .innerText =
+            allAnalysts.length + "+";
+
+
+        renderAnalysts(
+            allAnalysts
+        );
+
+
+    } catch (error) {
+
+
+        container.innerHTML =
+        "<p>Ошибка загрузки аналитиков: " +
+        error.message +
+        "</p>";
+
+    }
+
+}
+
+
+function renderAnalysts(
+    analysts
+) {
+
+
+    const container =
+    document
+        .getElementById(
+            "analystsContainer"
+        );
+
+
+    if (
+        analysts.length === 0
+    ) {
+
+
+        container.innerHTML =
+        "<p>Пока нет зарегистрированных аналитиков.</p>";
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+    "";
+
+
+    analysts.forEach(
+        analyst => {
+
+
+            const card =
+            document
+                .createElement(
+                    "div"
+                );
+
+
+            card.className =
+            "card";
+
+
+            const firstLetter =
+            analyst.username
+                .charAt(0)
+                .toUpperCase();
+
+
+            card.innerHTML = `
+
+                <div class="avatar">
+                    ${firstLetter}
+                </div>
+
+                <h3>
+                    ${analyst.username}
+                </h3>
+
+                <div class="role">
+                    ${analyst.role}
+                </div>
+
+                <div class="info">
+
+                    <span>
+                        MMR
+                    </span>
+
+                    <b>
+                        ${analyst.mmr}
+                    </b>
+
+                </div>
+
+                <div class="info">
+
+                    <span>
+                        Цена разбора
+                    </span>
+
+                    <b>
+                        ${analyst.price} ₽
+                    </b>
+
+                </div>
+
+                <p style="
+                    color:#9299a7;
+                    margin-top:15px;
+                    line-height:1.5;
+                ">
+
+                    ${analyst.description || ""}
+
+                </p>
+
+                <div class="price">
+                    ${analyst.price} ₽
+                </div>
+
+                <button
+                    class="order-btn"
+                    onclick="openModal('${analyst.username}')"
+                >
+
+                    Заказать разбор
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+
+    );
+
+}
+
+
+function openModal(
+    analyst
+) {
+
+
+    selectedAnalyst =
+    analyst;
+
+
+    document
+        .getElementById(
+            "selectedAnalyst"
+        )
+        .innerText =
+        "Аналитик: " +
+        analyst;
+
+
+    document
+        .getElementById(
+            "orderModal"
+        )
+        .style
+        .display =
+        "flex";
+
+}
+
+
+function closeModal() {
+
+
+    document
+        .getElementById(
+            "orderModal"
+        )
+        .style
+        .display =
+        "none";
+
+}
+
+
+async function sendOrder() {
+
+
+    const matchId =
+    document
+        .getElementById(
+            "matchId"
+        )
+        .value;
+
+
+    const mmr =
+    document
+        .getElementById(
+            "playerMmr"
+        )
+        .value;
+
+
+    const question =
+    document
+        .getElementById(
+            "question"
+        )
+        .value;
+
+
+    if (
+        !matchId ||
+        !mmr ||
+        !question
+    ) {
+
+
+        alert(
+            "Заполни все поля"
+        );
+
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json",
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY,
+
+                    "Prefer":
+                    "return=minimal"
+
+                },
+
+                body:
+                JSON.stringify({
+
+                    analyst:
+                    selectedAnalyst,
+
+                    match_id:
+                    matchId,
+
+                    player_mmr:
+                    mmr,
+
+                    question:
+                    question,
+
+                    status:
+                    "new"
+
+                })
+
+            }
+
+        );
+
+
+        if (
+            !response.ok
+        ) {
+
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        alert(
+            "Заявка успешно отправлена!"
+        );
+
+
+        document
+            .getElementById(
+                "matchId"
+            )
+            .value =
+            "";
+
+
+        document
+            .getElementById(
+                "playerMmr"
+            )
+            .value =
+            "";
+
+
+        document
+            .getElementById(
+                "question"
+            )
+            .value =
+            "";
+
+
+        closeModal();
+
+
+    } catch (error) {
+
+
+        alert(
+            "Ошибка отправки заявки:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+function filterAnalysts() {
+
+
+    const role =
+    document
+        .getElementById(
+            "roleFilter"
+        )
+        .value;
+
+
+    const mmr =
+    document
+        .getElementById(
+            "mmrFilter"
+        )
+        .value;
+
+
+    const filtered =
+    allAnalysts.filter(
+
+        analyst => {
+
+
+            const roleMatch =
+            role === "all" ||
+            analyst.role === role;
+
+
+            const mmrMatch =
+            mmr === "all" ||
+            analyst.mmr >=
+            parseInt(mmr);
+
+
+            return (
+                roleMatch &&
+                mmrMatch
+            );
+
+        }
+
+    );
+
+
+    renderAnalysts(
+        filtered
+    );
+
+}
+
+
+function openLoginModal() {
+
+
+    document
+        .getElementById(
+            "loginModal"
+        )
+        .style
+        .display =
+        "flex";
+
+}
+
+
+function closeLoginModal() {
+
+
+    document
+        .getElementById(
+            "loginModal"
+        )
+        .style
+        .display =
+        "none";
+
+}
+
+
+async function loginAnalyst() {
+
+
+    const email =
+    document
+        .getElementById(
+            "loginEmail"
+        )
+        .value;
+
+
+    const password =
+    document
+        .getElementById(
+            "loginPassword"
+        )
+        .value;
+
+
+    const errorBox =
+    document
+        .getElementById(
+            "loginError"
+        );
+
+
+    errorBox.innerText =
+    "";
+
+
+    if (
+        !email ||
+        !password
+    ) {
+
+
+        errorBox.innerText =
+        "Заполни email и пароль";
+
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/analysts?email=eq." +
+            encodeURIComponent(
+                email
+            ) +
+            "&password=eq." +
+            encodeURIComponent(
+                password
+            ) +
+            "&select=*",
+
+            {
+
+                headers: {
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+
+        if (
+            !response.ok
+        ) {
+
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        const analysts =
+        await response.json();
+
+
+        if (
+            analysts.length === 0
+        ) {
+
+
+            errorBox.innerText =
+            "Неверный email или пароль";
+
+
+            return;
+
+        }
+
+
+        currentAnalyst =
+        analysts[0];
+
+
+        document
+            .getElementById(
+                "mainSite"
+            )
+            .style
+            .display =
+            "none";
+
+
+        document
+            .getElementById(
+                "loginModal"
+            )
+            .style
+            .display =
+            "none";
+
+
+        document
+            .getElementById(
+                "dashboard"
+            )
+            .style
+            .display =
+            "block";
+
+
+        document
+            .getElementById(
+                "analystName"
+            )
+            .innerText =
+            "Вы вошли как: " +
+            currentAnalyst.username;
+
+
+        loadOrders();
+
+
+    } catch (error) {
+
+
+        errorBox.innerText =
+        "Ошибка входа: " +
+        error.message;
+
+    }
+
+}
+
+
+async function loadOrders() {
+
+
+    const ordersBox =
+    document
+        .getElementById(
+            "orders"
+        );
+
+
+    ordersBox.innerHTML =
+    "<p>Загрузка заявок...</p>";
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?analyst=eq." +
+            encodeURIComponent(
+                currentAnalyst.username
+            ) +
+            "&select=*&order=created_at.desc",
+
+            {
+
+                headers: {
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY
+
+                }
+
+            }
+
+        );
+
+
+        if (
+            !response.ok
+        ) {
+
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        const orders =
+        await response.json();
+
+
+        if (
+            orders.length === 0
+        ) {
+
+
+            ordersBox.innerHTML =
+            '<p class="empty">Пока заявок нет.</p>';
+
+
+            return;
+
+        }
+
+
+        ordersBox.innerHTML =
+        "";
+
+
+        orders.forEach(
+            order => {
+
+
+                let statusText =
+                "Новая";
+
+
+                let statusClass =
+                "status-new";
+
+
+                if (
+                    order.status ===
+                    "in_progress"
+                ) {
+
+
+                    statusText =
+                    "В работе";
+
+
+                    statusClass =
+                    "status-progress";
+
+                }
+
+
+                if (
+                    order.status ===
+                    "completed"
+                ) {
+
+
+                    statusText =
+                    "Завершена";
+
+
+                    statusClass =
+                    "status-completed";
+
+                }
+
+
+                const div =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                "order";
+
+
+                div.innerHTML = `
+
+                    <p>
+                        <b>Match ID:</b>
+                        ${order.match_id}
+                    </p>
+
+                    <p>
+                        <b>MMR игрока:</b>
+                        ${order.player_mmr}
+                    </p>
+
+                    <p>
+                        <b>Вопрос:</b>
+                        ${order.question}
+                    </p>
+
+                    <p>
+                        <b>Статус:</b>
+
+                        <span class="status ${statusClass}">
+                            ${statusText}
+                        </span>
+
+                    </p>
+
+                    <div class="order-actions">
+
+                        <button
+                            class="order-action"
+                            onclick="updateStatus(
+                                ${order.id},
+                                'in_progress'
+                            )"
+                        >
+
+                            Взять в работу
+
+                        </button>
+
+
+                        <button
+                            class="order-action"
+                            onclick="updateStatus(
+                                ${order.id},
+                                'completed'
+                            )"
+                        >
+
+                            Завершить
+
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                ordersBox.appendChild(
+                    div
+                );
+
+            }
+
+        );
+
+
+    } catch (error) {
+
+
+        ordersBox.innerHTML =
+        "<p>Ошибка загрузки заявок: " +
+        error.message +
+        "</p>";
+
+    }
+
+}
+
+
+async function updateStatus(
+    orderId,
+    status
+) {
+
+
+    try {
+
+
+        const response =
+        await fetch(
+
+            SUPABASE_URL +
+            "/rest/v1/orders?id=eq." +
+            orderId,
+
+            {
+
+                method:
+                "PATCH",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json",
+
+                    "apikey":
+                    SUPABASE_KEY,
+
+                    "Authorization":
+                    "Bearer " +
+                    SUPABASE_KEY,
+
+                    "Prefer":
+                    "return=minimal"
+
+                },
+
+                body:
+                JSON.stringify({
+
+                    status:
+                    status
+
+                })
+
+            }
+
+        );
+
+
+        if (
+            !response.ok
+        ) {
+
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+        await loadOrders();
+
+
+    } catch (error) {
+
+
+        alert(
+            "Ошибка изменения статуса:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+function logout() {
+
+
+    currentAnalyst =
+    null;
+
+
+    document
+        .getElementById(
+            "dashboard"
+        )
+        .style
+        .display =
+        "none";
+
+
+    document
+        .getElementById(
+            "mainSite"
+        )
+        .style
+        .display =
+        "block";
+
+}
+
+
+loadAnalysts();
+
+
+</script>
+
+</body>
+
+</html>
